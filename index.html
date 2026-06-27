@@ -35,14 +35,6 @@
         <button class="filter-chip active" data-filter="all">전체</button>
       </div>
 
-      <!-- 학교급 필터 -->
-      <div class="filter-row" id="level-filter-row" style="margin-top:8px">
-        <button class="filter-chip level-chip active" data-level="all">전체 학년</button>
-        <button class="filter-chip level-chip" data-level="초">초등</button>
-        <button class="filter-chip level-chip" data-level="중">중등</button>
-        <button class="filter-chip level-chip" data-level="고">고등</button>
-      </div>
-
       <p class="results-info">총 <strong id="app-count">0</strong>개</p>
 
       <div class="card-grid" id="card-grid"></div>
@@ -106,22 +98,6 @@
                   <button type="button" class="chip" data-val="초6">6학년</button>
                 </div>
               </div>
-              <div class="chip-row">
-                <span class="row-label">중학교</span>
-                <div class="chips" data-group="grades">
-                  <button type="button" class="chip" data-val="중1">1학년</button>
-                  <button type="button" class="chip" data-val="중2">2학년</button>
-                  <button type="button" class="chip" data-val="중3">3학년</button>
-                </div>
-              </div>
-              <div class="chip-row">
-                <span class="row-label">고등학교</span>
-                <div class="chips" data-group="grades">
-                  <button type="button" class="chip" data-val="고1">1학년</button>
-                  <button type="button" class="chip" data-val="고2">2학년</button>
-                  <button type="button" class="chip" data-val="고3">3학년</button>
-                </div>
-              </div>
             </div>
             <p class="chip-summary">선택한 학년: <span class="summary-val" id="grades-summary">없음</span></p>
           </div>
@@ -170,24 +146,6 @@
               <div class="keyword-wrap"><span class="kw-hash">#</span><input type="text" class="keyword-input" id="kw1" placeholder="키워드 입력"></div>
               <div class="keyword-wrap"><span class="kw-hash">#</span><input type="text" class="keyword-input" id="kw2" placeholder="키워드 입력"></div>
               <div class="keyword-wrap"><span class="kw-hash">#</span><input type="text" class="keyword-input" id="kw3" placeholder="키워드 입력"></div>
-            </div>
-          </div>
-
-          <!-- 디벗 OS -->
-          <div class="chip-section">
-            <div class="chip-section-header">
-              <span class="chip-section-label">디벗 OS</span>
-            </div>
-            <div class="chips" data-group="os" id="chips-os">
-              <button type="button" class="chip" data-val="Android">Android</button>
-              <button type="button" class="chip" data-val="iOS">iOS</button>
-              <button type="button" class="chip" data-val="ChromeBook">ChromeBook</button>
-              <button type="button" class="chip" data-val="Windows">Windows</button>
-              <button type="button" class="chip" data-val="WhaleBook">WhaleBook</button>
-            </div>
-            <div class="custom-input-row">
-              <input type="text" class="custom-chip-input" data-group="os" placeholder="기타 입력 후 Enter">
-              <button type="button" class="btn btn-outline btn-sm" data-add-group="os">추가</button>
             </div>
           </div>
 
@@ -251,7 +209,7 @@
                 <th>학년</th>
                 <th>과목</th>
                 <th>키워드</th>
-                <th>OS / AI</th>
+                <th>AI 에듀테크</th>
                 <th>URL</th>
                 <th>관리</th>
               </tr>

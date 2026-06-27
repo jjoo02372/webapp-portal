@@ -95,7 +95,6 @@ const els = {
 const chipState = {
   grades:      new Set(),
   subjects:    new Set(),
-  os:          new Set(),
   aiTools:     new Set(),
   gradeMode:   'single',
   subjectMode: 'single',
@@ -114,7 +113,6 @@ window.addEventListener('hashchange', route);
 
 /* ── 현재 필터 상태 ── */
 let activeSubjectFilter = 'all';
-let activeLevelFilter = 'all';
 
 /* ── 포털: 카드 렌더링 ── */
 function renderCards() {
@@ -126,8 +124,7 @@ function renderCards() {
                      || (a.description || '').toLowerCase().includes(q)
                      || (a.keywords || []).some(k => k.toLowerCase().includes(q));
     const matchSubj = activeSubjectFilter === 'all' || (a.subjects || []).includes(activeSubjectFilter);
-    const matchLevel = activeLevelFilter === 'all' || (a.grades || []).some(g => g.startsWith(activeLevelFilter));
-    return matchQ && matchSubj && matchLevel;
+    return matchQ && matchSubj;
   });
 
   els.appCount.textContent = filtered.length;
@@ -148,7 +145,6 @@ function appCard(app) {
   const grades = (app.grades || []);
   const subjects = (app.subjects || []);
   const keywords = (app.keywords || []);
-  const os = (app.os || []);
   const ai = (app.aiTools || []);
 
   const gradeChips = grades.slice(0, 5).map(g =>
@@ -159,9 +155,6 @@ function appCard(app) {
 
   const kwTags = keywords.map(k =>
     `<span class="kw-tag">#${escHtml(k)}</span>`).join('');
-
-  const osBadges = os.slice(0, 3).map(o =>
-    `<span class="badge-os">${escHtml(o)}</span>`).join('');
 
   const aiBadges = ai.slice(0, 3).map(t =>
     `<span class="badge-ai">${escHtml(t)}</span>`).join('');
@@ -181,7 +174,7 @@ function appCard(app) {
       <h3 class="card-title">${escHtml(app.name)}</h3>
       ${app.description ? `<p class="card-desc">${escHtml(app.description)}</p>` : ''}
       ${kwTags ? `<div class="card-keywords">${kwTags}</div>` : ''}
-      ${(osBadges || aiBadges) ? `<div class="card-meta-row">${osBadges}${aiBadges}</div>` : ''}
+      ${aiBadges ? `<div class="card-meta-row">${aiBadges}</div>` : ''}
     </div>
     <div class="card-footer">
       <a href="${escHtml(app.url)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">열기 →</a>
@@ -230,14 +223,14 @@ function appRow(app) {
   const grades   = (app.grades   || []).map(v => `<span class="table-chip">${escHtml(v)}</span>`).join('');
   const subjects = (app.subjects || []).map(v => `<span class="table-chip">${escHtml(v)}</span>`).join('');
   const keywords = (app.keywords || []).map(v => `<span class="table-chip">#${escHtml(v)}</span>`).join('');
-  const osAi     = [...(app.os || []), ...(app.aiTools || [])].map(v => `<span class="table-chip">${escHtml(v)}</span>`).join('');
+  const aiChips  = (app.aiTools  || []).map(v => `<span class="table-chip">${escHtml(v)}</span>`).join('');
 
   return `<tr>
     <td><strong>${escHtml(app.name)}</strong></td>
     <td><div class="table-chips">${grades  || '—'}</div></td>
     <td><div class="table-chips">${subjects|| '—'}</div></td>
     <td><div class="table-chips">${keywords|| '—'}</div></td>
-    <td><div class="table-chips">${osAi    || '—'}</div></td>
+    <td><div class="table-chips">${aiChips || '—'}</div></td>
     <td><a href="${escHtml(app.url)}" target="_blank" class="table-url">${escHtml(app.url)}</a></td>
     <td><div class="table-actions-cell">
       <button class="btn btn-outline btn-icon" data-edit="${app.id}">수정</button>
@@ -365,13 +358,13 @@ function updateSummary(group) {
 }
 
 function resetChips() {
-  ['grades', 'subjects', 'os', 'aiTools'].forEach(g => {
+  ['grades', 'subjects', 'aiTools'].forEach(g => {
     chipState[g].clear();
     document.querySelectorAll(`[data-group="${g}"] .chip`).forEach(c => c.classList.remove('active'));
     updateSummary(g);
   });
   /* 커스텀 칩 제거 */
-  ['chips-subjects', 'chips-os', 'chips-aiTools'].forEach(id => {
+  ['chips-subjects', 'chips-aiTools'].forEach(id => {
     const container = $(id);
     if (container) container.querySelectorAll('.chip[data-val]').forEach(c => {
       if (!c.dataset.preset) c.remove();
@@ -388,9 +381,8 @@ function loadChips(app) {
   resetChips();
   (app.grades   || []).forEach(v => { chipState.grades.add(v);   syncOrAdd('grades',   v); });
   (app.subjects || []).forEach(v => { chipState.subjects.add(v); syncOrAdd('subjects', v); });
-  (app.os       || []).forEach(v => { chipState.os.add(v);       syncOrAdd('os',       v); });
   (app.aiTools  || []).forEach(v => { chipState.aiTools.add(v);  syncOrAdd('aiTools',  v); });
-  ['grades','subjects','os','aiTools'].forEach(updateSummary);
+  ['grades','subjects','aiTools'].forEach(updateSummary);
 
   if ((app.grades   || []).length > 1) activateMode('grades',   'multi');
   if ((app.subjects || []).length > 1) activateMode('subjects', 'multi');
@@ -431,7 +423,6 @@ els.appForm.addEventListener('submit', e => {
     grades:   [...chipState.grades],
     subjects: [...chipState.subjects],
     keywords,
-    os:       [...chipState.os],
     aiTools:  [...chipState.aiTools],
     updatedAt: nowDate(),
   };
@@ -525,16 +516,6 @@ els.clearBtn.addEventListener('click', () => {
   showToast('초기화 완료', 'success');
 });
 
-/* ── 학교급 필터 ── */
-document.querySelectorAll('.level-chip').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.level-chip').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeLevelFilter = btn.dataset.level;
-    renderCards();
-  });
-});
-
 /* ── 검색 ── */
 els.searchInput.addEventListener('input', renderCards);
 
@@ -542,7 +523,7 @@ els.searchInput.addEventListener('input', renderCards);
 els.exportCsvBtn.addEventListener('click', () => {
   const apps = loadApps().map(migrate);
   if (!apps.length) { showToast('내보낼 앱이 없습니다.', 'error'); return; }
-  const header = ['id','name','url','description','grades','subjects','keywords','os','aiTools','thumbnail','createdAt','updatedAt'];
+  const header = ['id','name','url','description','grades','subjects','keywords','aiTools','thumbnail','createdAt','updatedAt'];
   const rows = apps.map(a =>
     header.map(k => {
       const v = Array.isArray(a[k]) ? a[k].join('|') : (a[k] || '');
@@ -617,7 +598,6 @@ function seedSampleData() {
     grades: ['초5', '초6'],
     subjects: ['수학', '과학'],
     keywords: ['인과관계', '상관관계', '데이터분석'],
-    os: ['ChromeBook', 'Windows'],
     aiTools: [],
     thumbnail: '',
     createdAt: nowDate(),
