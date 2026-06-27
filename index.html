@@ -23,46 +23,50 @@
     </div>
   </header>
 
-  <!-- 포털 뷰 -->
+  <!-- ===== 포털 뷰 ===== -->
   <main id="view-portal" class="view">
     <div class="container">
-      <div class="portal-hero">
-        <h2>수업 준비 앱 모음</h2>
-        <p>직접 만든 학습용 웹앱을 모아두는 교사 전용 포털입니다.</p>
+      <div class="portal-search-bar">
+        <input type="text" id="search-input" class="search-input" placeholder="🔍  앱 이름, 설명, 키워드로 검색…">
       </div>
 
-      <div class="filter-bar">
-        <input type="text" id="search-input" class="search-input" placeholder="앱 이름 또는 설명으로 검색…">
-        <select id="filter-subject" class="filter-select">
-          <option value="">전체 과목</option>
-        </select>
-        <select id="filter-tag" class="filter-select">
-          <option value="">전체 태그</option>
-        </select>
+      <!-- 과목 필터 칩 -->
+      <div class="filter-row" id="subject-filter-row">
+        <button class="filter-chip active" data-filter="all">전체</button>
       </div>
 
-      <p class="results-info"><span id="app-count">0</span>개의 앱</p>
+      <!-- 학교급 필터 -->
+      <div class="filter-row" id="level-filter-row" style="margin-top:8px">
+        <button class="filter-chip level-chip active" data-level="all">전체 학년</button>
+        <button class="filter-chip level-chip" data-level="초">초등</button>
+        <button class="filter-chip level-chip" data-level="중">중등</button>
+        <button class="filter-chip level-chip" data-level="고">고등</button>
+      </div>
+
+      <p class="results-info">총 <strong id="app-count">0</strong>개</p>
 
       <div class="card-grid" id="card-grid"></div>
 
-      <div class="empty-state" id="empty-state">
+      <div class="empty-state hidden" id="empty-state">
         <div class="empty-icon">🗂️</div>
-        <p>아직 등록된 앱이 없습니다.</p>
+        <p>등록된 앱이 없습니다.</p>
         <a href="#manage" class="btn btn-primary">첫 앱 추가하기</a>
       </div>
     </div>
   </main>
 
-  <!-- 관리 뷰 -->
+  <!-- ===== 관리 뷰 ===== -->
   <main id="view-manage" class="view hidden">
     <div class="container">
       <h2 class="section-title">앱 등록 / 관리</h2>
 
       <div class="form-card">
-        <h3 id="form-title">새 앱 추가</h3>
+        <h3 class="form-card-title" id="form-title">새 앱 추가</h3>
         <form id="app-form" novalidate>
           <input type="hidden" id="edit-id">
-          <div class="form-grid">
+
+          <!-- 기본 정보 -->
+          <div class="form-basic-grid">
             <div class="form-group">
               <label for="input-name">앱 이름 <span class="required">*</span></label>
               <input type="text" id="input-name" placeholder="예: 통계 탐구 도구" required>
@@ -71,27 +75,153 @@
               <label for="input-url">URL <span class="required">*</span></label>
               <input type="url" id="input-url" placeholder="https://…" required>
             </div>
-            <div class="form-group">
-              <label for="input-subject">과목</label>
-              <input type="text" id="input-subject" placeholder="예: 수학, 과학">
-            </div>
-            <div class="form-group">
-              <label for="input-unit">단원</label>
-              <input type="text" id="input-unit" placeholder="예: 통계와 확률">
-            </div>
             <div class="form-group full">
               <label for="input-description">설명</label>
               <textarea id="input-description" rows="2" placeholder="앱에 대한 간단한 설명"></textarea>
-            </div>
-            <div class="form-group full">
-              <label for="input-tags">태그 <span class="hint">(쉼표로 구분)</span></label>
-              <input type="text" id="input-tags" placeholder="예: 데이터분석, 시각화, 인터랙티브">
             </div>
             <div class="form-group full">
               <label for="input-thumbnail">썸네일 이미지 URL <span class="hint">(선택)</span></label>
               <input type="url" id="input-thumbnail" placeholder="https://…">
             </div>
           </div>
+
+          <!-- 적용 학년 -->
+          <div class="chip-section">
+            <div class="chip-section-header">
+              <span class="chip-section-label">적용 학년</span>
+              <div class="mode-tabs" id="grade-mode-tabs">
+                <button type="button" class="mode-tab active" data-mode="single" data-target="grades">단일</button>
+                <button type="button" class="mode-tab" data-mode="multi" data-target="grades">여러 학년</button>
+              </div>
+            </div>
+            <div class="chip-rows">
+              <div class="chip-row">
+                <span class="row-label">초등학교</span>
+                <div class="chips" data-group="grades">
+                  <button type="button" class="chip" data-val="초1">1학년</button>
+                  <button type="button" class="chip" data-val="초2">2학년</button>
+                  <button type="button" class="chip" data-val="초3">3학년</button>
+                  <button type="button" class="chip" data-val="초4">4학년</button>
+                  <button type="button" class="chip" data-val="초5">5학년</button>
+                  <button type="button" class="chip" data-val="초6">6학년</button>
+                </div>
+              </div>
+              <div class="chip-row">
+                <span class="row-label">중학교</span>
+                <div class="chips" data-group="grades">
+                  <button type="button" class="chip" data-val="중1">1학년</button>
+                  <button type="button" class="chip" data-val="중2">2학년</button>
+                  <button type="button" class="chip" data-val="중3">3학년</button>
+                </div>
+              </div>
+              <div class="chip-row">
+                <span class="row-label">고등학교</span>
+                <div class="chips" data-group="grades">
+                  <button type="button" class="chip" data-val="고1">1학년</button>
+                  <button type="button" class="chip" data-val="고2">2학년</button>
+                  <button type="button" class="chip" data-val="고3">3학년</button>
+                </div>
+              </div>
+            </div>
+            <p class="chip-summary">선택한 학년: <span class="summary-val" id="grades-summary">없음</span></p>
+          </div>
+
+          <!-- 과목 -->
+          <div class="chip-section">
+            <div class="chip-section-header">
+              <span class="chip-section-label">과목</span>
+              <div class="mode-tabs" id="subject-mode-tabs">
+                <button type="button" class="mode-tab active" data-mode="single" data-target="subjects">단일</button>
+                <button type="button" class="mode-tab" data-mode="multi" data-target="subjects">여러 과목</button>
+              </div>
+            </div>
+            <div class="chips" data-group="subjects" id="chips-subjects">
+              <button type="button" class="chip" data-val="국어">국어</button>
+              <button type="button" class="chip" data-val="수학">수학</button>
+              <button type="button" class="chip" data-val="사회">사회</button>
+              <button type="button" class="chip" data-val="과학">과학</button>
+              <button type="button" class="chip" data-val="영어">영어</button>
+              <button type="button" class="chip" data-val="음악">음악</button>
+              <button type="button" class="chip" data-val="미술">미술</button>
+              <button type="button" class="chip" data-val="체육">체육</button>
+              <button type="button" class="chip" data-val="실과">실과</button>
+              <button type="button" class="chip" data-val="정보">정보</button>
+              <button type="button" class="chip" data-val="도덕">도덕</button>
+              <button type="button" class="chip" data-val="통합">통합</button>
+              <button type="button" class="chip" data-val="진로">진로</button>
+              <button type="button" class="chip" data-val="창체">창체</button>
+              <button type="button" class="chip" data-val="자유학기">자유학기</button>
+              <button type="button" class="chip" data-val="기술">기술</button>
+              <button type="button" class="chip" data-val="가정">가정</button>
+            </div>
+            <div class="custom-input-row">
+              <input type="text" class="custom-chip-input" data-group="subjects" placeholder="기타 입력 후 Enter">
+              <button type="button" class="btn btn-outline btn-sm" data-add-group="subjects">추가</button>
+            </div>
+            <p class="chip-summary">선택한 과목: <span class="summary-val" id="subjects-summary">없음</span></p>
+          </div>
+
+          <!-- 핵심 키워드 -->
+          <div class="chip-section">
+            <div class="chip-section-header">
+              <span class="chip-section-label">핵심 키워드 <span class="hint">(#형태, 최대 3개)</span></span>
+            </div>
+            <div class="keyword-inputs">
+              <div class="keyword-wrap"><span class="kw-hash">#</span><input type="text" class="keyword-input" id="kw1" placeholder="키워드 입력"></div>
+              <div class="keyword-wrap"><span class="kw-hash">#</span><input type="text" class="keyword-input" id="kw2" placeholder="키워드 입력"></div>
+              <div class="keyword-wrap"><span class="kw-hash">#</span><input type="text" class="keyword-input" id="kw3" placeholder="키워드 입력"></div>
+            </div>
+          </div>
+
+          <!-- 디벗 OS -->
+          <div class="chip-section">
+            <div class="chip-section-header">
+              <span class="chip-section-label">디벗 OS</span>
+            </div>
+            <div class="chips" data-group="os" id="chips-os">
+              <button type="button" class="chip" data-val="Android">Android</button>
+              <button type="button" class="chip" data-val="iOS">iOS</button>
+              <button type="button" class="chip" data-val="ChromeBook">ChromeBook</button>
+              <button type="button" class="chip" data-val="Windows">Windows</button>
+              <button type="button" class="chip" data-val="WhaleBook">WhaleBook</button>
+            </div>
+            <div class="custom-input-row">
+              <input type="text" class="custom-chip-input" data-group="os" placeholder="기타 입력 후 Enter">
+              <button type="button" class="btn btn-outline btn-sm" data-add-group="os">추가</button>
+            </div>
+          </div>
+
+          <!-- AI 에듀테크 -->
+          <div class="chip-section">
+            <div class="chip-section-header">
+              <span class="chip-section-label">AI 에듀테크</span>
+              <span class="hint-note">※ 목록에 없는 항목만 직접 입력해 주세요.</span>
+            </div>
+            <div class="chips" data-group="aiTools" id="chips-aiTools">
+              <button type="button" class="chip" data-val="ChatGPT">ChatGPT</button>
+              <button type="button" class="chip" data-val="Gemini">Gemini</button>
+              <button type="button" class="chip" data-val="Claude">Claude</button>
+              <button type="button" class="chip" data-val="Copilot">Copilot</button>
+              <button type="button" class="chip" data-val="Perplexity">Perplexity</button>
+              <button type="button" class="chip" data-val="뤼튼">뤼튼</button>
+              <button type="button" class="chip" data-val="패들렛">패들렛</button>
+              <button type="button" class="chip" data-val="캔바">캔바</button>
+              <button type="button" class="chip" data-val="미리캔버스">미리캔버스</button>
+              <button type="button" class="chip" data-val="멘티미터">멘티미터</button>
+              <button type="button" class="chip" data-val="구글 워크스페이스">구글 워크스페이스</button>
+              <button type="button" class="chip" data-val="MS 팀즈">MS 팀즈</button>
+              <button type="button" class="chip" data-val="노션">노션</button>
+              <button type="button" class="chip" data-val="피그마">피그마</button>
+              <button type="button" class="chip" data-val="스크래치">스크래치</button>
+              <button type="button" class="chip" data-val="엔트리">엔트리</button>
+              <button type="button" class="chip" data-val="Google AI Studio">Google AI Studio</button>
+            </div>
+            <div class="custom-input-row">
+              <input type="text" class="custom-chip-input" data-group="aiTools" placeholder="기타 입력 후 Enter">
+              <button type="button" class="btn btn-outline btn-sm" data-add-group="aiTools">추가</button>
+            </div>
+          </div>
+
           <div class="form-error" id="form-error"></div>
           <div class="form-actions">
             <button type="submit" class="btn btn-primary" id="submit-btn">추가하기</button>
@@ -100,27 +230,28 @@
         </form>
       </div>
 
+      <!-- 목록 테이블 -->
       <div class="table-card">
         <div class="table-header">
           <h3>등록된 앱 목록</h3>
           <div class="table-actions">
             <span class="badge" id="manage-count">0개</span>
-            <button class="btn btn-outline btn-sm" id="export-csv-btn">CSV 내보내기</button>
+            <button class="btn btn-outline btn-sm" id="export-csv-btn">CSV</button>
             <button class="btn btn-outline btn-sm" id="export-json-btn">JSON 내보내기</button>
             <label class="btn btn-outline btn-sm" for="import-file">JSON 가져오기</label>
             <input type="file" id="import-file" accept=".json" class="hidden">
             <button class="btn btn-danger-outline btn-sm" id="clear-btn">전체 초기화</button>
           </div>
         </div>
-
         <div class="table-wrapper">
           <table class="app-table">
             <thead>
               <tr>
                 <th>앱 이름</th>
+                <th>학년</th>
                 <th>과목</th>
-                <th>단원</th>
-                <th>태그</th>
+                <th>키워드</th>
+                <th>OS / AI</th>
                 <th>URL</th>
                 <th>관리</th>
               </tr>
@@ -141,18 +272,17 @@
           <span class="divider">·</span>
           <a href="pages/terms.html" target="_blank">이용약관</a>
           <span class="divider">·</span>
-          <a href="mailto:kkd02373@gmail.com" id="footer-contact">문의 · 주은영</a>
+          <a href="mailto:kkd02373@gmail.com">문의 · 주은영</a>
         </div>
         <p class="footer-date">시행일: 2026년 6월 27일</p>
       </div>
     </div>
   </footer>
 
-  <!-- 삭제 확인 모달 -->
   <div class="modal-overlay hidden" id="modal-overlay">
     <div class="modal">
       <h3>앱 삭제</h3>
-      <p id="modal-message">이 앱을 삭제하시겠습니까?</p>
+      <p id="modal-message"></p>
       <div class="modal-actions">
         <button class="btn btn-danger" id="modal-confirm">삭제</button>
         <button class="btn btn-secondary" id="modal-cancel">취소</button>
